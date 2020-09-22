@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -42,7 +44,24 @@ class UserRegisterType extends AbstractType
                 'multiple' => true, 
                 'expanded' => true, 
                 'choices' => $roles,
-            ]);
+            ])
+            ->add('service', EntityType::class, [
+                'label'         => 'Affecté au service',
+                // permettre le choix multiple
+                'multiple'      => false,
+                // true pour checkbox, false pour select
+                'expanded'      => false,
+                // Classe associée aux champ
+                'class'         => Service::class,
+                'choice_label'  => 'name',
+                'mapped'        => true,
+                'required'      => true,
+            ])    
+            ;
+            
+            if($options['type_register'] == 'sub_account') {
+                $builder->remove('service');
+            }
     }
 
 

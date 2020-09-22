@@ -1,14 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TicketController!{% endblock %}
+{% block title %}{% endblock %}
+
+
 
 {% block body %}
 
-<div class="example-wrapper container">
-    <h1>Ticket list</h1>
-
-   {% if tickets|length > 0 %}
-    {% for ticket in tickets %}
+<main class="container">
     <div class="card" style="margin-bottom: 30px;">
         <div class="card-header">
             <h4>{{ ticket.title }}
@@ -39,10 +37,23 @@
             </div>
         </div>
     </div>
+
+    {% for message in ticket.messages %}
+    <div class="card" style="margin-bottom: 30px;">
+        <div class="card-body" style="min-height: 130px;">
+            <strong class="card-title">Posté par {{ message.auteur.firstname }} {{ message.auteur.lastname }} 
+            le {{ message.createdAt|date('d/m/Y') }} à {{ message.createdAt|date('H:i') }}</strong>
+            <p class="card-text">{{ message.content }}</p>
+        </div>
+    </div> 
     {% endfor %}
-{% else %}
-    <div class="alert alert-warning">Aucun ticket déposé par vous.</div>
-{% endif %}
+
+
+    {{ form_start(form) }}
+
+    {{ form_rest(form) }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    {{ form_end(form) }}
+</main>
    
-</div>
 {% endblock %}
