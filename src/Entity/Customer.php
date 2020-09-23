@@ -63,10 +63,16 @@ class Customer
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="customer", cascade={"persist"})
      */
     private $user;
- 
+
+    /**
+     * @ORM\OneToMany(targetEntity=Ticket::class, mappedBy="customer")
+     */
+    private $tickets;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
+        $this->tickets = new ArrayCollection();
     }
  
  
@@ -189,4 +195,36 @@ class Customer
  
         return $this;
     }
+
+    /**
+     * @return Collection|Ticket[]
+     */
+    public function getTickets(): Collection
+    {
+        return $this->tickets;
+    }
+
+    public function addTicket(Ticket $ticket): self
+    {
+        if (!$this->tickets->contains($ticket)) {
+            $this->tickets[] = $ticket;
+            $ticket->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicket(Ticket $ticket): self
+    {
+        if ($this->tickets->contains($ticket)) {
+            $this->tickets->removeElement($ticket);
+            // set the owning side to null (unless already changed)
+            if ($ticket->getCustomer() === $this) {
+                $ticket->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

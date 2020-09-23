@@ -34,6 +34,8 @@ class UserRegisterController extends AbstractController
             $password = $passwordEncoder->encodePassword($user, $form->get('password')->getData());
             $user->setPassword($password);
             $user->setCreatedAt(new \DateTime());
+            $user->setFirstname('toto');
+            $user->setLastname('toto');
 
             $manager->persist($user);
             $manager->flush();

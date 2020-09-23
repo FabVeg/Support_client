@@ -66,9 +66,21 @@ class Ticket
      */
     private $customer;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="ticket")
+     */
+    private $messages;
+
+    /**
+     * @ORM\OneToMany(targetEntity=File::class, mappedBy="ticket")
+     */
+    private $files;
+
     public function __construct()
     {
         $this->service = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->files = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,13 +136,10 @@ class Ticket
         return $this;
     }
 
-    /**
-    * toString
-    * @return string
-    */
-    public function __toString(){
-        return (string) $this->name;
+    public function __toString() {
+        return (string) $this->getId();
     }
+
 
     /**
      * @return Collection|Service[]
@@ -190,6 +199,68 @@ class Ticket
     public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            // set the owning side to null (unless already changed)
+            if ($message->getTicket() === $this) {
+                $message->setTicket(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|File[]
+     */
+    public function getFiles(): Collection
+    {
+        return $this->files;
+    }
+
+    public function addFile(File $file): self
+    {
+        if (!$this->files->contains($file)) {
+            $this->files[] = $file;
+            $file->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(File $file): self
+    {
+        if ($this->files->contains($file)) {
+            $this->files->removeElement($file);
+            // set the owning side to null (unless already changed)
+            if ($file->getTicket() === $this) {
+                $file->setTicket(null);
+            }
+        }
 
         return $this;
     }

@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Ticket;
+use App\Entity\Service;
 use App\Entity\Customer;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -48,13 +50,35 @@ class User implements UserInterface
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="service")
+     * @ORM\OneToMany(targetEntity=Ticket::class, mappedBy="auteur")
      */
-    private $user;
+    private $tickets;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstname;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastname;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Service::class, inversedBy="users")
+     */
+    private $service;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="auteur")
+     */
+    private $messages;
 
     public function __construct()
     {
         $this->user = new ArrayCollection();
+        $this->tickets = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,34 +183,111 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Service[]
-     */
-    public function getUser(): Collection
+    
+    public function __toString()
     {
-        return $this->user;
+        return $this->email;
     }
 
-    public function addUser(Service $user): self
+
+    /**
+     * @return Collection|Ticket[]
+     */
+    public function getTickets(): Collection
     {
-        if (!$this->user->contains($user)) {
-            $this->user[] = $user;
-            $user->setService($this);
+        return $this->tickets;
+    }
+
+    public function addTicket(Ticket $ticket): self
+    {
+        if (!$this->tickets->contains($ticket)) {
+            $this->tickets[] = $ticket;
+            $ticket->setAuteur($this);
         }
 
         return $this;
     }
 
-    public function removeUser(Service $user): self
+    public function removeTicket(Ticket $ticket): self
     {
-        if ($this->user->contains($user)) {
-            $this->user->removeElement($user);
+        if ($this->tickets->contains($ticket)) {
+            $this->tickets->removeElement($ticket);
             // set the owning side to null (unless already changed)
-            if ($user->getService() === $this) {
-                $user->setService(null);
+            if ($ticket->getAuteur() === $this) {
+                $ticket->setAuteur(null);
             }
         }
 
         return $this;
     }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getService(): ?Service
+    {
+        return $this->service;
+    }
+
+    public function setService(?Service $service): self
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            // set the owning side to null (unless already changed)
+            if ($message->getAuteur() === $this) {
+                $message->setAuteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+   
 }
